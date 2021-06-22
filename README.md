@@ -1,2 +1,2 @@
 # ProgramowanieObjektoweJava
- takie tam zadanka
+ Zadanka z zajęć
