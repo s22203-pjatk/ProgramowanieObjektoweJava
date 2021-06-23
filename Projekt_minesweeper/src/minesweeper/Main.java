@@ -7,12 +7,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
-    @Override
+    @Override                                                                                   // stawienie tak jakby *sceny* czyli program
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("levelSetter.fxml"));
-        primaryStage.setTitle("minesweeper");
-        primaryStage.setScene(new Scene(root, 1000, 500));
+        Parent root = FXMLLoader.load(getClass().getResource("levelSetter.fxml"));              // wczytujemy wybierator_trudności
+        primaryStage.setTitle("minesweeper");                                                   // nazwanie tej *sceny*
+        primaryStage.setScene(new Scene(root, 1000, 500));                                      // rozmiar okienka
         primaryStage.show();
     }
 

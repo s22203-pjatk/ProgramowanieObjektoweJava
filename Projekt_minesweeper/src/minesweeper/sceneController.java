@@ -19,7 +19,7 @@ public class sceneController {
    private Parent root;
 
     public void goToLevelSetter(KeyEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("levelSetter.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("levelSetter.fxml"));    //jeśli przegramy gierkę to może będziemy chcieli zagrać jeszcze raz
         root = loader.load();
         scene = new Scene(root);
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -31,21 +31,21 @@ public class sceneController {
     }
 
     public void goToGame(ActionEvent event, String level) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("gameBoard.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("gameBoard.fxml"));       //wczytujemy *pole* rozgrywki
         root = loader.load();
-        scene = new Scene(root);
-        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        stage.setScene(scene);
+        scene = new Scene(root);                                                                //teraz jest sceną
+        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();                       // pobieramy źródło z event(wybierator_trudności) i zamieniamy to na Node
+        stage.setScene(scene);                                                                  //pobiera dodatkowo scenę, i okienko apki
         stage.setResizable(false);
-        GameBoard gameBoard = loader.getController();
 
+        GameBoard gameBoard = loader.getController();                                           //tworzymy nowy obiekt klasy w której jest cala logika gry
         gameBoard.stageSize = 1000;
-        stage.setWidth(gameBoard.stageSize + 50);
+        stage.setWidth(gameBoard.stageSize + 50);                                               // rozmiary
         stage.setHeight(gameBoard.stageSize + 50);
 
             switch (level){
                 case "easy":
-                    gameBoard.howManyInRow = 9;
+                    gameBoard.howManyInRow = 9;                                                 //wybierator_trudnosci i jego cechy charakterystyczne
                     gameBoard.setBombs(15);
                     break;
                 case "medium":
@@ -61,9 +61,9 @@ public class sceneController {
         gameBoard.difficultyLevel = level;
         gameBoard.scene = scene;
         gameBoard.squareSize = (gameBoard.stageSize - 100)/ gameBoard.howManyInRow;
-        gameBoard.bombImage = new Image("file:src/resources/gifBomb.gif");
+        gameBoard.bombImage = new Image("file:src/resources/gifBomb.gif");                  //dodajemy obraz bomby i flagi
         gameBoard.flagImage = new Image("file:src/resources/flag.png");
-        gameBoard.createButtons();
+        gameBoard.createButtons();                                                              //inicjalizacja
         stage.show();
     }
 }

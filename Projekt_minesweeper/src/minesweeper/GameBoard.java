@@ -25,31 +25,31 @@ public class GameBoard {
     public ArrayList<String> bombIDList = new ArrayList<>();
     public ArrayList<String> flagIDList = new ArrayList<>();
 
-    public void createButtons(){
+    public void createButtons(){                                                    //tworzymy tutaj przyciski, po przez tablicę 2wymiarową
         int x = 0;
         int y = 0;
         for(int i = 0; i < stageSize; i+= squareSize){
             for(int j = 0; j < stageSize; j += squareSize){
                 Button button = new Button();
-                button.setId("square-" + x + "-" + y);
-                button.setUserData("square-" + x + "-" + y);
-                button.setPrefWidth(squareSize);
+                button.setId("square-" + x + "-" + y);                              //ustawianie id po współrzędnych
+                button.setUserData("square-" + x + "-" + y);                        //do userdata łatwiej się odwołać więc też ma współrzędne
+                button.setPrefWidth(squareSize);                                    //rozmiary ustalone w sceneController.java
                 button.setPrefHeight(squareSize);
                 button.setLayoutX(i);
                 button.setLayoutY(j);
                 button.setOnMouseClicked(event -> {
-                    actualButton = ((Button) event.getSource());
-                    if (event.getButton() == MouseButton.PRIMARY) {
-                        if (isThisBomb(actualButton.getId()) == 0) {
-                            if((isThisFlag(actualButton.getId()) == 0)){
-                                setClue(actualButton.getId());
+                    actualButton = ((Button) event.getSource());                                    //ustawia aktualny przycisk jaki jest przycisnięty
+                    if (event.getButton() == MouseButton.PRIMARY) {                                 //JEŻELI przycisk myszy LEWY, sprawdz czy to nie bomba
+                        if (isThisBomb(actualButton.getId()) == 0) {                                //0 = nie jest bomba
+                            if((isThisFlag(actualButton.getId()) == 0)){                            //jeżeli wcisnąłeś flagę, nic sie nie stanie
+                                setClue(actualButton.getId());                                      //ustaw podpowiedź
                             }
                         }else{
                             showAllBombs();
                         }
-                    } else if (event.getButton() == MouseButton.SECONDARY) {
+                    } else if (event.getButton() == MouseButton.SECONDARY) {                    //JEŻELI przycisk myszy prawy, ustaw flagę
                         setFlag();
-                        try {
+                        try {                                                                   // noo i sprawdz czy nie wygrałeś
                             Win();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -59,13 +59,13 @@ public class GameBoard {
                 gameBoard.getChildren().add(button);
                 y++;
             }
-            y = 0;
+            y = 0;                      // nie chcę żeby najeżdzały na siebie przyciski
             x++;
         }
     }
 
     public void Win() throws IOException {
-        Collections.sort(bombIDList);
+        Collections.sort(bombIDList);                       //sprawdzamy listę bomb i flag , czy są równe
         Collections.sort(flagIDList);
         if(bombIDList.equals(flagIDList)){
             exit("You won!");
@@ -76,14 +76,14 @@ public class GameBoard {
         Button button = new Button();
         button.setPrefWidth(squareSize*4);
         button.setPrefHeight(squareSize*4);
-        button.setLayoutX(squareSize*4);
+        button.setLayoutX(squareSize*4);                                                                    //tworzy się mały komunikat
         button.setLayoutY(squareSize*4);
         button.setText(text);
         button.setOnKeyPressed(event -> {
             if(event.getCode().equals(KeyCode.ENTER)){
                 minesweeper.sceneController sceneController = new sceneController();
                 try {
-                    sceneController.goToLevelSetter(event);
+                    sceneController.goToLevelSetter(event);                                                 //gramy na nowo
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -92,15 +92,15 @@ public class GameBoard {
         gameBoard.getChildren().add(button);
     }
 
-    public void setClue(String buttonID){
+    public void setClue(String buttonID){                     // program szuka id i buttonu, tak zeby się zgadzały. nie były rozbierzne z tym co jest w aplikacji i w kodzie
         for (Node n : gameBoard.getChildren()) {
-            if(buttonID.equals(n.getId())){
+            if(buttonID.equals(n.getId())){                   // jeżeli znalazł, to za pomocą ^howManyBombs^ pokazuje ile jest bomb
                 int value = howManyBombs(n.getId());
-                n.setDisable(true);
-                if(value != 0){
+                n.setDisable(true);                           // dezaktywuję przycisk, żeby go nie wcisnąc 2raz
+                if(value != 0){                               // jeżeli nie równa się zero, to wstaw odpowiednią cyferkę odpowiadającą bomb w poblizu
                     n.setStyle("-fx-opacity:1.0; -fx-font-size:" + (squareSize - 75) +"; -fx-font-family: 'Helvetica', Arial, sans-serif;");
                     ((Button)n).setText(String.valueOf(value));
-                }else{
+                }else{                                                                      // jezeli zero, to szary przycisk
                     n.setStyle("-fx-background-color: #393939; -fx-opacity:1.0 ");
                 }
             }
@@ -108,12 +108,12 @@ public class GameBoard {
     }
 
     public void setFlag(){
-        ImageView flagImageView = new ImageView(flagImage);
+        ImageView flagImageView = new ImageView(flagImage);             //ustawiam nowy obraz, i ustawiam grafike aktualnego przycisku
         flagImageView.setFitWidth(squareSize - 15);
         flagImageView.setFitHeight(squareSize - 15);
-        if(actualButton.getGraphic() == null){
+        if(actualButton.getGraphic() == null){                          //Jeżeli jest flaga, to nie dostawiaj drugiej flagi
             actualButton.setGraphic(flagImageView);
-            flagIDList.add(actualButton.getId());
+            flagIDList.add(actualButton.getId());                       //id button łączymy z id flagi, więc nie jest już przyciskiem a flagą
         }else{
             actualButton.setGraphic(null);
             flagIDList.remove(actualButton.getId());
@@ -121,7 +121,7 @@ public class GameBoard {
     }
 
     public int isThisFlag(String buttonID){
-        int i = 0;
+        int i = 0;                                          //to samo co w isthisBomb, tylko z flagami
         while (i < flagIDList.size()){
             if(buttonID.equals(flagIDList.get(i))){
                 return 1;
@@ -132,7 +132,7 @@ public class GameBoard {
     }
 
     public void setBombs(int amount){
-        Random random = new Random();
+        Random random = new Random();                           //randomowo wrzuca bomby
         Set<String> bombIDSet = new TreeSet<>();
         int i = 0;
         while (i < amount){
@@ -146,7 +146,7 @@ public class GameBoard {
 
     public int isThisBomb(String buttonID){
         int i = 0;
-        while (i < bombIDList.size()){
+        while (i < bombIDList.size()){                              //zwracam 1 lub 0
             if(buttonID.equals(bombIDList.get(i))){
                 return 1;
             }
@@ -157,32 +157,32 @@ public class GameBoard {
 
     public int howManyBombs(String buttonID){
         String[] xy =  buttonID.split("-");
-        int x =  Integer.parseInt(xy[1]);
+        int x =  Integer.parseInt(xy[1]);                               //zmieniam square ( - ) i dostaję x oraz y
         int y =  Integer.parseInt(xy[2]);
-        return + isThisBomb("square-"+(x-1)+"-"+(y-1))
+        return + isThisBomb("square-"+(x-1)+"-"+(y-1))          // dla wszystkich przycisków obok,wysyła czy to jest bomba
                 + isThisBomb("square-"+(x-1)+"-"+y)
                 + isThisBomb("square-"+(x-1)+"-"+(y+1))
-                + isThisBomb("square-"+x +"-"+(y-1))
-                + isThisBomb("square-"+x +"-"+(y+1))
-                + isThisBomb("square-"+(x+1)+"-"+(y-1))
+                + isThisBomb("square-"+x+"-"+(y-1))
+                + isThisBomb("square-"+x+"-"+(y+1))
+                + isThisBomb("square-"+(x+1)+"-"+(y-1))         //jeżeli JEST tu bomba, no to dodaje 1
                 + isThisBomb("square-"+(x+1)+"-"+y)
-                + isThisBomb("square-"+(x+1)+"-"+(y+1));
+                + isThisBomb("square-"+(x+1)+"-"+(y+1));        //jeżeli nie ma tu bomby, no to zwraca 0
     }
 
     public void showAllBombs(){
         int i = 0;
         while (i < bombIDList.size()){
             ImageView bombImageView = new ImageView(bombImage);
-            bombImageView.setFitWidth(squareSize - 15);
+            bombImageView.setFitWidth(squareSize - 15);                             //odsłania  bomby
             bombImageView.setFitHeight(squareSize - 15);
             for (Node n : gameBoard.getChildren()) {
-                   n.setDisable(true);
+                   n.setDisable(true);                                              //uniemożliwia ponowne kliknięcie
                 if (bombIDList.get(i).equals(n.getUserData())) {
                    ((Button) n).setGraphic(bombImageView);
                 }
             }
             i++;
         }
-        exit("You lose..");
+        exit("You lose..");                                                     //wracamy do exit, ale z napisem YouLose !
     }
 }
